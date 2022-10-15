@@ -18,7 +18,3 @@ end
 function PLAY_PLAYER_SPEECH(pPed, sSpeechContext, sVoiceName, eSpeechParam, bIsCloned)
     --nop
 end
-
-function AddNextEntryToDebug(sDebugString, uDebugExtras)
-	--nop
-end
