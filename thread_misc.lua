@@ -117,28 +117,7 @@ function kill_thread(tiThread)
             return 1
         end
     elseif (tiThread == thread_get_handle()) then
-    	local bWaitForRetVal = false
-    	local bRetVal = false
-    	CreateThreadNow(function()
-    		if (coro_status(tiThread) ~= "suspended") then
-    			bWaitForRetVal = 1
-    			Wait(0)
-    		end
-    		if (coro_status(tiThread) == "suspended") then
-    			
-		        if (coro_close(tiThread)) then
-		        	bRetVal = 1
-		            return 1
-		        end
-		        return false
-		    end
-		    return false
-    	end, ("ThreadDestructor"))
-    	if bWaitForRetVal then
-    		Wait(0)
-    		-- killed
-    	end
-    	
+    	coro_yield(Citizen.PointerValueInt())
     end
     return false
 end
