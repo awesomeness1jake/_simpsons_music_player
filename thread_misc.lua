@@ -1,4 +1,3 @@
-local get_frame_time = GetFrameTime()
 local tbl_unpack = table.unpack
 local type = type
 local coro_status = coroutine.status
@@ -11,26 +10,10 @@ local debug_getinfo = debug.getinfo
 
 INVALID_THREAD_HANDLE = -1
 thread_get_handle = coro_running
+thread_yield = coro_yield
 
 local function is_thread_valid(tID)
 	return tID and tID ~= INVALID_THREAD_HANDLE and (type(tID) == "thread")
-end
-
--- Delay execution for a certain amount of time
---
--- duration:	duration of delay, in seconds (if time_seconds <= 0, execution will delay for exactly one frame)
---
-function delay(duration)
-	if duration == nil then
-		duration = 0
-	end
-
-	local elapsed_time = 0.0
-
-	repeat
-		thread_yield()
-		elapsed_time = elapsed_time + get_frame_time()
-	until (elapsed_time >= duration)
 end
 
 function sizeof_table(_table)
@@ -117,7 +100,7 @@ function kill_thread(tiThread)
             return 1
         end
     elseif (tiThread == thread_get_handle()) then
-    	coro_yield(Citizen.PointerValueInt())
+    	thread_yield(Citizen.PointerValueInt())
     end
     return false
 end
