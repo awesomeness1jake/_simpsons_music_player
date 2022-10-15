@@ -5,7 +5,7 @@ local coro_status = coroutine.status
 local coro_close = coroutine.close
 local coro_isyieldable = coroutine.isyieldable
 local coro_running = coroutine.running
-
+local coro_yield = coroutine.yield
 local CreateThreadNow = Citizen.CreateThreadNow
 local debug_getinfo = debug.getinfo
 
