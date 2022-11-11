@@ -1,10 +1,13 @@
+local MUSIC_PLAYER_STATE_INACTIVE = 0
+local MUSIC_PLAYER_STATE_ACTIVE = 1
+local MUSIC_PLAYER_STATE_INVALID = -1
 MusicPlayer = {}
 MusicPlayer.__index = MusicPlayer
 setmetatable(MusicPlayer, MusicPlayer)
 
 function MusicPlayer:Start(song)
     self.m_CurrentSong = song
-    self.m_State = 1
+    self.m_State = MUSIC_PLAYER_STATE_ACTIVE
 end
 
 function MusicPlayer:Stop(song)
@@ -14,14 +17,14 @@ function MusicPlayer:Stop(song)
             -- handle sunday_drive ending
             SUNDAY_DRIVE_END(playTime)
         end
-        self.m_State = 0
+        self.m_State = MUSIC_PLAYER_STATE_INACTIVE
         self.m_PrevSong = self.m_CurrentSong
         self.m_CurrentSong = ""
     end
 end
 
 function MusicPlayer:IsActive()
-    return (self.m_State == 1)
+    return (self.m_State == MUSIC_PLAYER_STATE_ACTIVE)
 end
 
 function MusicPlayer:CurrentSong()
@@ -45,7 +48,7 @@ function MusicPlayer:new()
     return setmetatable({
         m_CurrentSong = "", 
         m_PrevSong = "", 
-        m_State = -1
+        m_State = MUSIC_PLAYER_STATE_INVALID
     }, self)
 
 end
