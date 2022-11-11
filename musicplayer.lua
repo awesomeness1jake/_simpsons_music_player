@@ -2,8 +2,15 @@ local MUSIC_PLAYER_STATE_INACTIVE = 0
 local MUSIC_PLAYER_STATE_ACTIVE = 1
 local MUSIC_PLAYER_STATE_INVALID = -1
 MusicPlayer = {}
+MusicPlayer.EventHandler = {}
 MusicPlayer.__index = MusicPlayer
 setmetatable(MusicPlayer, MusicPlayer)
+
+function MusicPlayer:AddEventHandler(sEventName, eventHandler)
+    if (not MusicPlayer.EventHandler[sEventName]) then
+        MusicPlayer.EventHandler[sEventName] = eventHandler
+    end
+end
 
 function MusicPlayer:Start(song)
     self.m_CurrentSong = song
@@ -32,15 +39,8 @@ function MusicPlayer:CurrentSong()
 end
 
 function MusicPlayer:Event(event)
-    if (event == "SUNDAY_DRIVE_START") then
-        -- handle sunday_drive start
-        SUNDAY_DRIVE_START()
-    elseif (event == "HIT_AND_RUN_START") then
-        HIT_RUN_START()
-    elseif (event == "HIT_AND_RUN_CAUGHT") then
-        HIT_RUN_END(true)
-    elseif (event == "HIT_AND_RUN_EVADED") then
-        HIT_RUN_END(false)
+    if (MusicPlayer.EventHandler[sEventName]) then
+        MusicPlayer.EventHandler[sEventName]()
     end
 end
 

@@ -1,4 +1,3 @@
-local string_format = string.format
 local DoesContextExistForThisPed = DoesContextExistForThisPed
 local GetPedConfigFlag = GetPedConfigFlag
 local PlayerPedId = PlayerPedId
@@ -214,6 +213,17 @@ function SIMPSONS_MUSICPLAYER_STOP(event)
     g_SimpsonsMusicPlayer:Event(Stop)
 end
 
+--
+-- MusicPlayer Events
+--
 AddEventHandler("EVENT_GETINTOVEHICLE_START", GETINTOVEHICLE_START)
 AddEventHandler("SIMPSONS_MUSICPLAYER_EVENT", SIMPSONS_MUSICPLAYER_EVENT)
 AddEventHandler("SIMPSONS_MUSICPLAYER_STOP", SIMPSONS_MUSICPLAYER_STOP)
+
+--
+-- Music Events
+--
+g_SimpsonsMusicPlayer:AddEventHandler("SUNDAY_DRIVE_START", SUNDAY_DRIVE_START)
+g_SimpsonsMusicPlayer:AddEventHandler("HIT_AND_RUN_START", HIT_RUN_START)
+g_SimpsonsMusicPlayer:AddEventHandler("HIT_AND_RUN_CAUGHT", HIT_RUN_END)
+g_SimpsonsMusicPlayer:AddEventHandler("HIT_AND_RUN_EVADED", HIT_RUN_END)

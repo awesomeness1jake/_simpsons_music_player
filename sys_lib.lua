@@ -6,15 +6,16 @@ local string_format = string.format
 ----------------------
 
 function StringConCat(sParam0, sParam1, iParam2)
-    iParam2 = iParam2
     return sParam0:strconcat(sParam1)
 end
 
 function StringIntConCat(sParam0, iParam1, iParam2)
-    iParam2 = iParam2
     return sParam0:strconcat(iParam1)
 end
 
+----------------------
+-- Speech Functions --
+----------------------
 function PLAY_PLAYER_SPEECH(pPed, sSpeechContext, sVoiceName, eSpeechParam, bIsCloned)
     --nop
 end
