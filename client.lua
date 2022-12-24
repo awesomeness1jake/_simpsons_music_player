@@ -52,8 +52,7 @@ end
 function SIMPSONS_MUSIC_FINISHER(sMusic, sEvent, bPositive)
     local sMusicName = sMusic
     local startTime = GetGameTimer()
-    -- why does this need to be done? makes no sense. the streams have their set duration, and shouldn't have to be manually stopped to load another.
-    -- ie: playing a stream and waiting for it to end, the game will still somehow label that a stream is being played.
+    -- Stop a stream that may or may not be in progress
     StopStream()
     if (IsPlayerPlaying(GetPlayerIndex())) then
         sMusicName = StringConCat(sMusicName, StringConCat("_", sEvent))
