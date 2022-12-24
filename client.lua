@@ -148,7 +148,6 @@ function HIT_RUN_END()
         
         if (IsPlayerBeingArrested(GetPlayerIndex(), 1)) then
             TriggerMusicEvent("HIT_AND_RUN_CAUGHT")
-            -- when you are busted, might be better to have an arrested check instead.
             SIMPSONS_MUSIC_FINISHER("hit_run_end", "neg")
         else
             TriggerMusicEvent("HIT_AND_RUN_EVADED")
