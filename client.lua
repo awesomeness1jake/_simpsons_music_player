@@ -1,4 +1,4 @@
-local DoesContextExistForThisPed = DoesContextExistForThisPed
+local DoesContextExistForThisPed = CanPedSpeak
 local GetPedConfigFlag = GetPedConfigFlag
 local PlayerPedId = PlayerPedId
 
