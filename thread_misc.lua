@@ -1,5 +1,3 @@
-local tbl_unpack = table.unpack
-local type = type
 local coro_status = coroutine.status
 local coro_close = coroutine.close
 local coro_isyieldable = coroutine.isyieldable
@@ -7,99 +5,69 @@ local coro_running = coroutine.running
 local coro_yield = coroutine.yield
 local CreateThreadNow = Citizen.CreateThreadNow
 local debug_getinfo = debug.getinfo
+local tbl_unpack = table.unpack
+local type = type
 
 INVALID_THREAD_HANDLE = -1
 thread_get_handle = coro_running
 thread_yield = coro_yield
 
-local function is_thread_valid(tID)
-	return tID and tID ~= INVALID_THREAD_HANDLE and (type(tID) == "thread")
+local function is_thread_valid(tHandle)
+	return tHandle and tHandle ~= INVALID_THREAD_HANDLE and (type(tHandle) == "thread")
 end
 
-function sizeof_table(_table)
-	local iSize
-	if (type(_table) == "table") then
-		tSize = #_table
-		
-		iSize = 0
-		
-		for k, v in pairs(_table) do
-			iSize += 1
-		end
-		if (tSize > iSize) then
-			return tSize
-		end
-		return iSize
-	end
-	-- TODO: add warning or error that _table isn't a table
-	return 0
-end
-
-local function dbg_get_func_data(tfunc)
+local function dbg_func_data(tfunc, tname)
     local di = debug_getinfo(tfunc)
-    return di.name, di.short_src, di.linedefined, di.lastlinedefined
+    return tname or di.name, di.short_src, di.linedefined, di.lastlinedefined
 end
 
-
-local function t_init(tFunc, ...)
-    local tID
+local function t_init(tFunc, tName, ...)
+    local tHandle
     local args = { ... }
     CreateThreadNow(function()
-        local m_threadFuncRet
-        tID = thread_get_handle()
-        m_threadFuncRet = tFunc(tbl_unpack(args))
-        if (m_threadFuncRet) then
-            print(m_threadFuncRet)
-        end
-    end, ("THREAD %s %s [%i, %i]"):format(dbg_get_func_data(tFunc)))
-    return tID
+        tHandle = thread_get_handle()
+        tFunc(tbl_unpack(args))
+
+    end, ("THREAD %s %s [%i, %i]"):format(dbg_func_data(tFunc, tName)))
+    return tHandle
 end
 
-function thread_check_done(tID)
-    if (tID and (type(tID) == "thread") and (coro_status(tID) == "dead")) then
-        return 1
+function thread_check_done(tHandle)
+    if (is_thread_valid(tHandle) and (coro_status(tHandle) == "dead")) then
+        return true
     end
     return false
 end
 
 -- lazy 'thread' creator
 function thread_new(_thread, ...)
+    local t_name = ""
     local _type = type(_thread)
     local func
-    if (_type == "function") then
-		-- this shouldn't be used but is put in just in case.
+    if (_type == "function") then -- this shouldn't be used but is put in just in case.
         func = _thread
     elseif (_type == "string") then
-		-- apparently it is "cheaper" to do this
-        func = _G[_thread]
+		t_name = _thread
+		func = _G[_thread]
         if (type(func) ~= "function") then
             func = nil
         end
     end
-    if (func) then
-        
-        if ... then
-            return t_init(func, ...)
-        else
-            return t_init(func, ...)
-            --l_tID += 1
-            --CreateThread(func)
-            --return l_tID
-        end
+    if (func) then   
+        return t_init(func, t_name, ...)
     end
     return INVALID_THREAD_HANDLE
 end
 
-function kill_thread(tiThread)
-    if not (is_thread_valid(tiThread)) then
+function kill_thread(tThread)
+    if not (is_thread_valid(tThread)) then
         return false
     end
-    if (coro_status(tiThread) == "suspended") then --coroutine.status(tThread) ~= "dead") then
-        if (coro_close(tiThread)) then
-        	-- killed
-            return 1
+    if (coro_status(tThread) == "suspended") then -- check if the thread is able to be killed.
+        if (coro_close(tThread)) then
+            return true
         end
-    elseif (tiThread == thread_get_handle()) then
+    elseif (tThread == thread_get_handle()) then -- check if this thread is killing itself
     	thread_yield(Citizen.PointerValueInt())
     end
     return false
