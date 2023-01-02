@@ -38,7 +38,7 @@ function MusicPlayer:CurrentSong()
     return self.m_CurrentSong
 end
 
-function MusicPlayer:Event(event)
+function MusicPlayer:Event(sEventName)
     if (MusicPlayer.EventHandler[sEventName]) then
         MusicPlayer.EventHandler[sEventName]()
     end
