@@ -11,7 +11,7 @@ t_vehicleExit = INVALID_THREAD_HANDLE
 t_hit_and_run_music_thread = INVALID_THREAD_HANDLE
 
 -- currently this "event" is currently handled by script, while the enter phase of the event is done through the game events.
-function t_IE_vehicleExit_Watcher(sEvent)
+function t_IE_vehicleExit_Watcher()
     local pPed = PlayerPedId()
     if (pPed ~= 0) then
         while (true) do
@@ -22,7 +22,7 @@ function t_IE_vehicleExit_Watcher(sEvent)
         end
 		-- make sure the player has this speech context
         if (DoesContextExistForThisPed(pPed, "GET_OUT_OF_CAR", 0)) then
-            -- these should only play for simpsons characters!
+            -- this should only play for simpsons characters!
             PLAY_PLAYER_SPEECH(pPed, "GET_OUT_OF_CAR", 0, 0, 1)
         end
         GETOUTVEHICLE_START(pPed)
@@ -72,6 +72,7 @@ function SUNDAY_DRIVE_END(playTime)
         if (playTime ~= -1) then
             
             TriggerMusicEvent("sunday_drive_get_out_of_car")
+			-- check that a player isn't in a vehicle as it can lead to the audio playing while still driving
             if (not GetPedConfigFlag(PlayerPedId(), CPED_CONFIG_FLAG_InVehicle, 1)) then
                 --StopStream()
                 local sMusicName = "simpsons2_sunday_drive_end"
@@ -99,9 +100,9 @@ end
 function HIT_RUN_INTRO()
     -- quick fade out for current music
     TriggerMusicEvent("Hit_Run_Stop")
-    -- stop any current stream
+    -- stop any current stream (at some point this will be changed to work better) 
     StopStream()
-    while (not LoadStream("hit_run_intro", 0)) do
+    while (not LoadStream("Hit_Run_Intro", 0)) do
         Wait(0)
     end
     PlayStreamFrontend()
@@ -153,6 +154,8 @@ function HIT_RUN_END()
         end
         -- signal the music as finished
         g_SimpsonsMusicPlayer:Stop()
+		-- this is a bad way of re-initializing the sunday drive song (as it would be killed when entering the hit and run state)
+		-- It would probably be better to implement some sort of song cache, or queue. Currently I'm not planning on working on that, as that doesn't seem like a major concern with this.
         if (GetPedConfigFlag(PlayerPedId(), CPED_CONFIG_FLAG_InVehicle, 1)) then
             if (currentMissionIsSundayDrive()) then
                 g_SimpsonsMusicPlayer:Event("SUNDAY_DRIVE_START")
